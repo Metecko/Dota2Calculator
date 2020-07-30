@@ -1,0 +1,70 @@
+package cl.febos.pos.dashboard.model.xml
+
+import android.content.Context
+import android.util.Base64
+import android.util.Log
+import android.util.Xml
+import cl.febos.pos.model.Documento
+import cl.febos.pos.model.Impuesto
+import cl.febos.pos.utility.longToDate
+import cl.febos.pos.utility.longToDateTime
+import org.xmlpull.v1.XmlSerializer
+import java.io.BufferedReader
+import java.io.File
+import java.io.StringReader
+import java.io.StringWriter
+import java.security.KeyFactory
+import java.security.PrivateKey
+import java.security.Signature
+import java.security.spec.PKCS8EncodedKeySpec
+import java.util.*
+import javax.crypto.Cipher.PRIVATE_KEY
+
+
+class XMLGenerator {
+    companion object {
+        private val TAG = "XMLGenerator"
+        fun documetoToXML(documento: Documento, context: Context): String {
+
+            val uUID = "D"+UUID.randomUUID().toString().substring(1)
+            val tipoDocumento = documento.tipoDocumento.toString()
+            val folio = documento.folio.numero.toString()
+            val fecha = longToDate(documento.fechaHora)
+            val fechaHora = longToDateTime(documento.fechaHora)
+            val rutEmisor = documento.empresa.iut
+            val razonEmisor = documento.empresa.razonSocial
+            val giroEmisor = documento.empresa.giro
+            val codigoSIISucursal: String? = documento.empresa.codigoSucursal.toString()
+            val direccionEmisor = documento.empresa.direccion
+            val comunaEmisor = documento.empresa.comuna
+            val rutReceptor = documento.cliente.iut
+            val razonReceptor = documento.cliente.razonSocial
+            val giroReceptor = documento.cliente.giro
+            val direccionReceptor = documento.cliente.direccion
+            val comunaReceptor = documento.cliente.comuna
+            val montoNeto = documento.montoNeto.toString()
+            val montoTotal = documento.montoBruto.toString()
+            var ivaMonto = 0
+            val it1 = documento.detalles[0].descripcion
+            for (detalle in documento.detalles) {
+                for(impuesto in detalle.impuestos) {
+                    if(impuesto.nombre == Impuesto.IVA) {
+                        val iva = detalle.valorUnitario*detalle.cantidad*impuesto.valor
+                        ivaMonto += iva
+                    }
+                }
+            }
+
+            //desarmando caf
+            val cafString = String(Base64.decode(documento.folio.cuerpoCaf.toByteArray(Charsets.ISO_8859_1), Base64.DEFAULT), Charsets.ISO_8859_1)
+            Log.e(TAG, cafString)
+            val desdeRango = cafString.substring(cafString.lastIndexOf("<D>") + 3, cafString.lastIndexOf("</D>"));
+            val hastaRango = cafString.substring(cafString.lastIndexOf("<H>") + 3, cafString.lastIndexOf("</H>"));
+            val fa = cafString.substring(cafString.lastIndexOf("<FA>") + 4, cafString.lastIndexOf("</FA>"));
+            val eme = cafString.substring(cafString.lastIndexOf("<M>") + 3, cafString.lastIndexOf("</M>"));
+            val e = cafString.substring(cafString.lastIndexOf("<E>") + 3, cafString.lastIndexOf("</E>"));
+            val iDK = cafString.substring(cafString.lastIndexOf("<IDK>") + 5, cafString.lastIndexOf("</IDK>"));
+            val fRMA = cafString.substring(cafString.lastIndexOf("<FRMA algoritmo=\"SHA1withRSA\">") + 30, cafString.lastIndexOf("</FRMA>"));
+            val rSAPrivateKey = cafString.substring(cafString.lastIndexOf("<RSASK>") + 7, cafString.lastIndexOf("</RSASK>"))
+
+            val xmlSerializer = Xml.newSerializer()
