@@ -7,19 +7,19 @@
 
     <fragment
         android:id="@+id/nav_home"
-        android:name="cl.arlanditech.dota2calculator.ui.home.HomeFragment"
+        android:name="cl.arlanditech.dota2calculator.fragments.heroes.HeroesFragment"
         android:label="@string/menu_home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_heroes" />
 
     <fragment
         android:id="@+id/nav_gallery"
-        android:name="cl.arlanditech.dota2calculator.ui.gallery.GalleryFragment"
+        android:name="cl.arlanditech.dota2calculator.fragments.gallery.GalleryFragment"
         android:label="@string/menu_gallery"
         tools:layout="@layout/fragment_gallery" />
 
     <fragment
         android:id="@+id/nav_slideshow"
-        android:name="cl.arlanditech.dota2calculator.ui.slideshow.SlideshowFragment"
+        android:name="cl.arlanditech.dota2calculator.fragments.slideshow.SlideshowFragment"
         android:label="@string/menu_slideshow"
         tools:layout="@layout/fragment_slideshow" />
 </navigation>
