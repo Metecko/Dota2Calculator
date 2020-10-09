@@ -3,7 +3,7 @@ package cl.arlanditech.dota2calculator.fragments.heroes.model.api.response
 import com.google.gson.annotations.SerializedName
 
 data class HeroResponse (
-    @SerializedName("id") val id : Int,
+    @SerializedName("id") val id : Long,
     @SerializedName("name") val name : String,
     @SerializedName("displayName") val displayName : String,
     @SerializedName("shortName") val shortName : String,

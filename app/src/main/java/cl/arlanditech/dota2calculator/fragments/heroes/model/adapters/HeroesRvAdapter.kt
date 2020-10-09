@@ -1,23 +1,34 @@
 package cl.arlanditech.dota2calculator.fragments.heroes.model.adapters
 
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.ScaleAnimation
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import cl.arlanditech.dota2calculator.R
+import cl.arlanditech.dota2calculator.activities.hero.HeroActivity
 import cl.arlanditech.dota2calculator.model.Hero
+import cl.arlanditech.dota2calculator.model.data.Common
+import com.facebook.shimmer.ShimmerFrameLayout
+import com.squareup.picasso.Callback
+import com.squareup.picasso.Picasso
+import java.lang.Exception
 
-class HeroesRvAdapter(private val mHeroes: List<Hero>, private val context: Context) :
+class HeroesRvAdapter(private val mHeroes: List<Hero>,
+                      private val context: Context) :
     RecyclerView.Adapter<HeroesRvAdapter.ViewHolder>() {
-
+    val TAG = this.javaClass.simpleName
     inner class ViewHolder(listItemView: View) : RecyclerView.ViewHolder(listItemView) {
+        val containerView = itemView.findViewById<LinearLayout>(R.id.hero_item)
         val heroNameView = itemView.findViewById<TextView>(R.id.hero_name)
         val heroIconView = itemView.findViewById<ImageView>(R.id.hero_icon)
+        val progressView = itemView.findViewById<ShimmerFrameLayout>(R.id.progress_item)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -35,11 +46,36 @@ class HeroesRvAdapter(private val mHeroes: List<Hero>, private val context: Cont
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val hero: Hero = mHeroes[position]
+        val container = holder.containerView
         val heroName = holder.heroNameView
         val heroIcon = holder.heroIconView
+        val progress = holder.progressView
 
-        heroName.text = hero.displayName
-        heroIcon.setImageResource(hero.iconId)
+        heroName.text = "Cargando..."
+        Picasso.get().load(hero.getURLPng()).into(heroIcon, object: Callback {
+            override fun onSuccess() {
+                progress.hideShimmer()
+                progress.stopShimmer()
+                heroName.text = hero.displayName
+                setOnClickListener(container, hero)
+            }
+
+            override fun onError(e: Exception?) {
+                progress.hideShimmer()
+                progress.stopShimmer()
+                heroName.text = hero.displayName
+                setOnClickListener(container, hero)
+            }
+
+        })
+    }
+
+    private fun setOnClickListener(container: LinearLayout, hero: Hero) {
+        container.setOnClickListener {
+            Common.currentHero = hero
+            val intent = Intent(context, HeroActivity::class.java)
+            context.startActivity(intent)
+        }
     }
 
     fun scaleUpTextAnimation(

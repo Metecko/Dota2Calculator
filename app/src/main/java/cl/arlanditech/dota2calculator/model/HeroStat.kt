@@ -1,5 +1,7 @@
 package cl.arlanditech.dota2calculator.model
 
+import cl.arlanditech.dota2calculator.model.database.entities.HeroStatEntity
+
 data class HeroStat(val gameVersionId : Int,
                     val enabled : Boolean,
                     val heroUnlockOrder : Int,
@@ -30,4 +32,40 @@ data class HeroStat(val gameVersionId : Int,
                     val hpBarOffset : Int,
                     val visionDaytimeRange : Int,
                     val visionNighttimeRange : Int ) {
+    fun toEntity(): HeroStatEntity {
+        val entity = HeroStatEntity(
+            gameVersionId = gameVersionId,
+            enabled = enabled,
+            heroUnlockOrder = heroUnlockOrder,
+            team = team,
+            cmEnabled = cmEnabled,
+            newPlayerEnabled = newPlayerEnabled,
+            attackType = attackType,
+            startingArmor = startingArmor,
+            startingMagicArmor = startingMagicArmor,
+            startingDamageMin = startingDamageMin,
+            startingDamageMax = startingDamageMax,
+            attackRate = attackRate,
+            attackAnimationPoint = attackAnimationPoint,
+            attackAcquisitionRange = attackAcquisitionRange,
+            attackRange = attackRange,
+            primaryAttribute = primaryAttribute,
+            heroPrimaryAttribute = heroPrimaryAttribute,
+            strengthGain = strengthGain,
+            strengthBase = strengthBase,
+            agilityGain = agilityGain,
+            agilityBase = agilityBase,
+            intelligenceGain = intelligenceGain,
+            intelligenceBase = intelligenceBase,
+            hpRegen = hpRegen,
+            mpRegen = mpRegen,
+            moveSpeed = moveSpeed,
+            moveTurnRate = moveTurnRate,
+            hpBarOffset = hpBarOffset,
+            visionNighttimeRange = visionNighttimeRange,
+            visionDaytimeRange = visionDaytimeRange
+        )
+
+        return entity
+    }
 }
